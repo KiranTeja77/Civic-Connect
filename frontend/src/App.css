@@ -1,0 +1,1876 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap');
+@import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Fredoka', sans-serif;
+  background: linear-gradient(180deg, #123244 0%, #1e4359 28%, #3f6177 62%, #d8c7bd 100%);
+  min-height: 100vh;
+}
+
+.App {
+  min-height: 100vh;
+}
+
+/* Welcome Screen Styles */
+.welcome-container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #123244 0%, #1e4359 28%, #3f6177 62%, #d8c7bd 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  color: white;
+  text-align: center;
+}
+
+.welcome-header {
+  margin-bottom: 3rem;
+}
+
+.welcome-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.welcome-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+.welcome-illustration {
+  width: 280px;
+  height: 200px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 20px;
+  margin: 2rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.illustration-content {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.illustration-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.illustration-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #1e4359 0%, #3f6177 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+/* Language Selection Styles */
+.language-section {
+  margin: 2rem 0;
+}
+
+.language-title {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.language-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  max-width: 300px;
+}
+
+.language-option {
+  padding: 1rem;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid transparent;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  text-align: center;
+  font-weight: 500;
+}
+
+.language-option:hover {
+  background: rgba(255,255,255,0.25);
+  transform: translateY(-2px);
+}
+
+.language-option.selected {
+  border-color: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.25);
+}
+
+.get-started-btn {
+  background: linear-gradient(135deg, #1e4359 0%, #3f6177 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 2rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.get-started-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+}
+
+/* Login Styles */
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #123244 0%, #1e4359 28%, #3f6177 62%, #d8c7bd 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.login-card {
+  background: rgba(255,255,255,0.95);
+  padding: 2.5rem;
+  border-radius: 25px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+  color: #666;
+  font-weight: 400;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.form-input {
+  padding: 1rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #1e4359;
+  box-shadow: 0 0 0 3px rgba(30, 67, 89, 0.12);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #1e4359 0%, #3f6177 100%);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(30, 67, 89, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #1e4359;
+  border: 2px solid #1e4359;
+  padding: 0.8rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.btn-secondary:hover {
+  background: #1e4359;
+  color: white;
+}
+
+.login-options {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e1e5e9;
+}
+
+.guest-login {
+  color: #1e4359;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.guest-login:hover {
+  text-decoration: underline;
+}
+
+/* Dashboard Styles */
+.dashboard-container {
+  min-height: 100vh;
+  background: #eef2f5;
+  padding-bottom: 80px; /* space for bottom nav */
+}
+
+.dashboard-header {
+  background: linear-gradient(135deg, #102a38 0%, #1e4359 60%, #3f6177 100%);
+  color: white;
+  padding: 2rem 1rem 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-header::before {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  left: -50%;
+  width: 200%;
+  height: 100px;
+  background: #f8fafc;
+  border-radius: 50% 50% 0 0;
+}
+
+.dashboard-greeting {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-subtitle {
+  opacity: 0.9;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-actions {
+  padding: 1rem;
+  margin-top: -2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.action-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.05);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 35px rgba(0,0,0,0.12);
+}
+
+.action-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #1e4359 0%, #3f6177 100%);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.action-content h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.3rem;
+}
+
+.action-content p {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+/* Map Styles */
+.map-container {
+  height: 400px;
+  margin: 1rem;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  margin-bottom: 6rem; /* ensure not hidden by bottom nav */
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+/* Navigation Styles */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #f8fafb;
+  border-top: 1px solid #e1e5e9;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-around;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  z-index: 1000;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  color: #666;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  min-width: 0;
+  flex: 1;
+}
+
+.nav-item.active {
+  color: #1e4359;
+}
+
+.nav-item:hover {
+  color: #1e4359;
+  transform: translateY(-2px);
+}
+
+/* Admin Dashboard Styles */
+.admin-container {
+  min-height: 100vh;
+  background: #eef2f5;
+}
+
+.admin-header {
+  background: white;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.admin-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.admin-content {
+  padding: 2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.stat-title {
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Issue Card Styles */
+.issues-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.issue-card {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.issue-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.issue-image {
+  width: 100%;
+  height: 150px;
+  background: #eef2f5;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  background-size: cover;
+  background-position: center;
+}
+
+.issue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+
+.issue-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.3rem;
+}
+
+.issue-location {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.status-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-reported {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-in-progress {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-resolved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.issue-description {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.issue-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.upvote-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.8rem;
+}
+
+.upvote-btn:hover {
+  background: #f8fafc;
+}
+
+.upvote-btn.upvoted {
+  background: #1e4359;
+  color: white;
+  border-color: #1e4359;
+}
+
+/* Form Styles */
+.form-container {
+  min-height: 100vh;
+  max-width: 100vw;
+  background: #f8fafc;
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.form-container > .form-card {
+  width: 100%;
+}
+
+.form-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.form-row-inline {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.form-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.image-upload {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.image-upload:hover {
+  border-color: #1e4359;
+  background: rgba(30, 67, 89, 0.06);
+}
+
+.image-upload.has-image {
+  border-style: solid;
+  border-color: #1e4359;
+}
+
+.upload-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  color: #94a3b8;
+}
+
+.upload-text {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.uploaded-image {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .dashboard-container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  .actions-grid {
+    max-width: 100%;
+    gap: 0.875rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .welcome-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .welcome-title {
+    font-size: 2rem;
+  }
+
+  .welcome-illustration {
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .illustration-content {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  /* Dashboard Responsive */
+  .dashboard-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  
+  .dashboard-header {
+    padding: 1.5rem 1rem 2.5rem;
+  }
+  
+  .dashboard-greeting {
+    font-size: 1.5rem;
+  }
+  
+  .dashboard-subtitle {
+    font-size: 0.9rem;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 0.9 !important;
+  }
+  
+  .dashboard-header {
+    padding: 2rem 1rem 4rem !important;
+  }
+  
+  .dashboard-header > div > div {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 0.5rem;
+  }
+  
+  .dashboard-header > div > div > div:first-child {
+    width: 100%;
+  }
+  
+  .dashboard-actions {
+    padding: 0.75rem;
+    margin-top: -1.5rem;
+  }
+  
+  .actions-grid {
+    margin-bottom: 5rem;
+    gap: 0.875rem;
+    max-width: 100%;
+    padding-bottom: 1rem;
+  }
+  
+  /* Ensure dashboard container has proper padding for bottom nav on mobile */
+  .dashboard-container {
+    padding-bottom: 90px !important;
+  }
+  
+  /* Bottom navigation mobile fixes */
+  .bottom-nav {
+    z-index: 1000;
+    padding: 0.75rem 0.5rem;
+    min-height: 70px;
+  }
+  
+  .nav-item {
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    padding: 0.25rem;
+    flex: 1;
+    max-width: 20%;
+  }
+  
+  .nav-item span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .action-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+    gap: 0.875rem;
+  }
+  
+  .action-icon {
+    min-width: 48px;
+    width: 48px;
+    height: 48px;
+  }
+  
+  .action-content h3 {
+    font-size: 1rem;
+  }
+  
+  .action-content p {
+    font-size: 0.85rem;
+  }
+  
+  /* Form Responsive */
+  .form-container {
+    padding: 1rem 0.75rem;
+  }
+  
+  .form-card {
+    margin: 0;
+    border-radius: 0;
+    padding: 1.25rem 1rem 2rem;
+    max-width: 100%;
+  }
+
+  .form-title {
+    font-size: 1.4rem;
+  }
+
+  .form-label {
+    font-size: 0.85rem;
+  }
+
+  .form-input {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+    width: 100%;
+  }
+
+  .form-row-inline {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .form-row-inline .btn-secondary {
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* Report Issue - Full width inputs on mobile */
+  .form-group .form-row-inline input[type="text"],
+  .form-group .form-row-inline textarea {
+    width: 100% !important;
+    flex: none !important;
+  }
+  
+  /* GPS button centering on mobile - apply to all buttons in form-row-inline */
+  .form-group .form-row-inline .btn-secondary {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+  }
+
+  .issues-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Admin Responsive */
+  .admin-container {
+    overflow-x: hidden;
+  }
+  
+  .admin-header {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .admin-header > div {
+    width: 100%;
+  }
+  
+  .admin-header > div > div:last-child {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .admin-container {
+    overflow-x: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .admin-content {
+    padding: 1rem 0.75rem;
+    overflow-y: auto;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Navigation tabs scroll on mobile */
+  .admin-content > div:first-child {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  .admin-content > div:first-child > button {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  /* Search and filter section scroll on mobile - only for search/filter container */
+  /* Target div containing input with placeholder "Search issues..." */
+  .admin-content div:has(input[placeholder="Search issues..."]) {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap !important;
+    padding-bottom: 0.5rem;
+  }
+  
+  .admin-content div:has(input[placeholder="Search issues..."]) > div {
+    flex-shrink: 0;
+    min-width: fit-content;
+  }
+  
+  .admin-content div:has(input[placeholder="Search issues..."]) input,
+  .admin-content div:has(input[placeholder="Search issues..."]) select {
+    flex-shrink: 0;
+  }
+  
+  /* Issues table scroll and fix overlapping on mobile */
+  .admin-content > div:has(table) {
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+  
+  .admin-content > div:has(table) > table {
+    min-width: 800px;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .admin-content > div:has(table) table th,
+  .admin-content > div:has(table) table td {
+    white-space: nowrap;
+    min-width: 120px;
+    padding: 0.8rem;
+  }
+  
+  .admin-content > div:has(table) table th:first-child,
+  .admin-content > div:has(table) table td:first-child {
+    min-width: 150px;
+    white-space: normal;
+  }
+  
+  .admin-content > div:has(table) table th:last-child,
+  .admin-content > div:has(table) table td:last-child {
+    min-width: 100px;
+  }
+  
+  /* Analytics Charts - FORCE single column layout on mobile */
+  .admin-content > div > div[style*="display: grid"],
+  .admin-content > div > div[style*="gridTemplateColumns"],
+  .admin-content div[style*="display: grid"][style*="gridTemplateColumns"],
+  .admin-content div[style*="gridTemplateColumns"] {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Analytics chart cards - FULL WIDTH - centered - force single column */
+  .admin-content > div > div[style*="display: grid"] > div,
+  .admin-content div[style*="gridTemplateColumns"] > div,
+  .admin-content div[style*="display: grid"] > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 1rem !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    display: block !important;
+    flex: none !important;
+    grid-column: span 1 !important;
+    position: relative !important;
+  }
+  
+  /* ============================================
+     MOBILE ANALYTICS CHARTS - FULL VISIBILITY
+     Mobile (≤768px): Single column, 100% width, EXPLICIT HEIGHTS
+     ============================================ */
+  
+  /* White card containers - EXPLICIT HEIGHT to prevent zero height */
+  .admin-content > div > div[style*="display: grid"] > div > div[style*="background: white"],
+  .admin-content div[style*="gridTemplateColumns"] > div > div[style*="background: white"],
+  .admin-content div[style*="display: grid"] > div > div[style*="background: white"] {
+    position: relative !important;
+    overflow: visible !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 400px !important;
+    height: auto !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* ResponsiveContainer - EXPLICIT HEIGHT for line/bar charts (260px-300px) */
+  .admin-content > div > div[style*="display: grid"] > div > div[style*="background: white"] .recharts-responsive-container,
+  .admin-content div[style*="gridTemplateColumns"] > div > div[style*="background: white"] .recharts-responsive-container,
+  .admin-content div[style*="display: grid"] > div > div[style*="background: white"] .recharts-responsive-container,
+  .admin-content .recharts-responsive-container {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    height: 300px !important;
+    min-height: 300px !important;
+    max-height: 300px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+  
+  /* Chart wrapper - EXPLICIT HEIGHT */
+  .admin-content .recharts-wrapper {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block !important;
+    width: 100% !important;
+    height: 300px !important;
+    min-height: 300px !important;
+    max-height: 300px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+  
+  /* SVG surface - EXPLICIT HEIGHT */
+  .admin-content .recharts-surface,
+  .admin-content svg.recharts-surface {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block !important;
+    width: 100% !important;
+    height: 300px !important;
+    min-height: 300px !important;
+    max-height: 300px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+  
+  /* Pie chart containers - EXPLICIT HEIGHT (220px-260px) */
+  .admin-content > div > div[style*="display: grid"] > div > div[style*="background: white"]:has(.recharts-pie) .recharts-responsive-container,
+  .admin-content div[style*="gridTemplateColumns"] > div > div[style*="background: white"]:has(.recharts-pie) .recharts-responsive-container,
+  .admin-content div[style*="display: grid"] > div > div[style*="background: white"]:has(.recharts-pie) .recharts-responsive-container {
+    height: 260px !important;
+    min-height: 260px !important;
+    max-height: 260px !important;
+  }
+  
+  .admin-content > div > div[style*="display: grid"] > div > div[style*="background: white"]:has(.recharts-pie),
+  .admin-content div[style*="gridTemplateColumns"] > div > div[style*="background: white"]:has(.recharts-pie),
+  .admin-content div[style*="display: grid"] > div > div[style*="background: white"]:has(.recharts-pie) {
+    min-height: 350px !important;
+  }
+  
+  /* Pie chart SVG - EXPLICIT HEIGHT */
+  .admin-content > div > div[style*="display: grid"] > div > div[style*="background: white"]:has(.recharts-pie) .recharts-surface,
+  .admin-content div[style*="gridTemplateColumns"] > div > div[style*="background: white"]:has(.recharts-pie) .recharts-surface,
+  .admin-content div[style*="display: grid"] > div > div[style*="background: white"]:has(.recharts-pie) .recharts-surface {
+    height: 260px !important;
+    min-height: 260px !important;
+    max-height: 260px !important;
+  }
+  
+  /* ============================================
+     LINE CHART VISIBILITY - CRITICAL FIX
+     ============================================ */
+  
+  /* Line chart lines - ensure stroke is visible with proper width and color */
+  .admin-content .recharts-line,
+  .admin-content .recharts-line-curve,
+  .admin-content .recharts-line-path,
+  .admin-content path.recharts-curve,
+  .admin-content path[stroke="#10b981"],
+  .admin-content path[stroke="#ef4444"] {
+    visibility: visible !important;
+    opacity: 1 !important;
+    stroke-width: 3px !important;
+    stroke-opacity: 1 !important;
+    fill: none !important;
+  }
+  
+  /* Line chart dots/points - ensure visible */
+  .admin-content .recharts-dot,
+  .admin-content .recharts-line-dot,
+  .admin-content .recharts-dot-circle,
+  .admin-content circle.recharts-dot {
+    visibility: visible !important;
+    opacity: 1 !important;
+    fill-opacity: 1 !important;
+    stroke-width: 2px !important;
+    r: 4px !important;
+  }
+  
+  /* Line chart active dots */
+  .admin-content .recharts-line-dot-active,
+  .admin-content .recharts-active-dot {
+    visibility: visible !important;
+    opacity: 1 !important;
+    fill-opacity: 1 !important;
+    stroke-width: 2px !important;
+    r: 4px !important;
+  }
+  
+  /* Bar chart bars - ensure visibility */
+  .admin-content .recharts-bar,
+  .admin-content .recharts-bar-rectangle,
+  .admin-content rect.recharts-bar-rectangle {
+    visibility: visible !important;
+    opacity: 1 !important;
+    fill-opacity: 1 !important;
+    stroke-opacity: 1 !important;
+  }
+  
+  /* Area chart - ensure visibility */
+  .admin-content .recharts-area,
+  .admin-content .recharts-area-area,
+  .admin-content path.recharts-area-area {
+    visibility: visible !important;
+    opacity: 1 !important;
+    fill-opacity: 0.6 !important;
+    stroke-opacity: 1 !important;
+  }
+  
+  /* Pie chart sectors - ensure visibility */
+  .admin-content .recharts-pie-sector,
+  .admin-content path.recharts-pie-sector {
+    visibility: visible !important;
+    opacity: 1 !important;
+    stroke-width: 2px !important;
+    stroke: #fff !important;
+    stroke-opacity: 1 !important;
+  }
+  
+  /* Pie chart - ensure visibility */
+  .admin-content .recharts-pie {
+    visibility: visible !important;
+    display: block !important;
+    opacity: 1 !important;
+  }
+  
+  /* ============================================
+     AXES AND GRID VISIBILITY - CRITICAL FIX
+     ============================================ */
+  
+  /* Chart axes - ensure visible with proper stroke */
+  .admin-content .recharts-cartesian-axis,
+  .admin-content .recharts-cartesian-axis-line,
+  .admin-content line.recharts-cartesian-axis-line {
+    visibility: visible !important;
+    opacity: 1 !important;
+    stroke: #64748b !important;
+    stroke-width: 1px !important;
+    stroke-opacity: 1 !important;
+  }
+  
+  /* Axis ticks - ensure visible */
+  .admin-content .recharts-cartesian-axis-tick,
+  .admin-content .recharts-cartesian-axis-tick-line,
+  .admin-content line.recharts-cartesian-axis-tick-line {
+    visibility: visible !important;
+    opacity: 1 !important;
+    stroke: #64748b !important;
+    stroke-width: 1px !important;
+    stroke-opacity: 1 !important;
+  }
+  
+  /* Grid lines - ensure visible */
+  .admin-content .recharts-cartesian-grid,
+  .admin-content .recharts-cartesian-grid-horizontal,
+  .admin-content .recharts-cartesian-grid-vertical,
+  .admin-content line.recharts-cartesian-grid-horizontal,
+  .admin-content line.recharts-cartesian-grid-vertical {
+    visibility: visible !important;
+    opacity: 1 !important;
+    stroke: #f1f5f9 !important;
+    stroke-width: 1px !important;
+    stroke-opacity: 1 !important;
+    stroke-dasharray: 3 3 !important;
+  }
+  
+  /* Performance Summary and SLA - remove span 2 on mobile */
+  .admin-content div[style*="gridColumn"] {
+    grid-column: span 1 !important;
+  }
+  
+  /* Chart containers - CENTERED and FULL WIDTH - CRITICAL */
+  .admin-content .recharts-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+  }
+  
+  .admin-content .recharts-responsive-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    height: 300px !important;
+    min-height: 300px !important;
+    max-height: 300px !important;
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    display: block !important;
+  }
+  
+  /* PieChart SVG - CENTERED and FULL VISIBILITY */
+  .admin-content .recharts-surface {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+    margin: 0 auto !important;
+    display: block !important;
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* ALL SVG charts - ensure centered and full width */
+  .admin-content svg.recharts-surface {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    display: block !important;
+    margin: 0 auto !important;
+  }
+  
+  /* Recharts layer - ensure proper positioning */
+  .admin-content .recharts-layer {
+    transform-origin: center center !important;
+  }
+  
+  /* Pie chart - ensure centered */
+  .admin-content .recharts-pie {
+    transform-origin: center center !important;
+  }
+  
+  /* CRITICAL: Legend and labels - center at bottom middle of container */
+  .admin-content .recharts-legend-wrapper {
+    position: absolute !important;
+    bottom: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: auto !important;
+    max-width: 90% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0.5rem !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 10 !important;
+  }
+  
+  .admin-content .recharts-legend-item {
+    margin: 0.25rem 0.5rem !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  /* CRITICAL: Pie chart labels - center at bottom */
+  .admin-content .recharts-text.recharts-pie-label-text {
+    font-size: 0.75rem !important;
+    fill: #333 !important;
+    visibility: visible !important;
+    text-anchor: middle !important;
+    opacity: 1 !important;
+  }
+  
+  /* CRITICAL: All text elements - ensure visibility and center positioning */
+  .admin-content .recharts-text,
+  .admin-content .recharts-label {
+    visibility: visible !important;
+    fill: #333 !important;
+    opacity: 1 !important;
+  }
+  
+  /* CRITICAL: Axis labels - ensure visibility */
+  .admin-content .recharts-cartesian-axis-tick-value,
+  .admin-content .recharts-cartesian-axis-tick text {
+    visibility: visible !important;
+    fill: #64748b !important;
+    opacity: 1 !important;
+  }
+  
+  /* CRITICAL: Ensure legend text is visible */
+  .admin-content .recharts-legend-item-text {
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: #333 !important;
+  }
+  
+  .admin-content .recharts-pie-sector {
+    stroke-width: 1px !important;
+    stroke: #fff !important;
+  }
+  
+  /* Chart axes - ensure visibility */
+  .admin-content .recharts-cartesian-axis {
+    display: block !important;
+  }
+  
+  /* Tooltip - ensure visibility */
+  .admin-content .recharts-tooltip-wrapper {
+    z-index: 100 !important;
+  }
+  
+  /* CRITICAL: Force chart container to have explicit dimensions BEFORE chart renders */
+  .admin-content > div > div[style*="display: grid"] > div > div[style*="background: white"] > h4 + .recharts-responsive-container,
+  .admin-content div[style*="gridTemplateColumns"] > div > div[style*="background: white"] > h4 + .recharts-responsive-container {
+    width: 100% !important;
+    height: 300px !important;
+    min-height: 300px !important;
+    display: block !important;
+  }
+  
+  /* CRITICAL: Ensure parent div has height before chart renders */
+  .admin-content > div > div[style*="display: grid"] > div > div[style*="background: white"] > * {
+    box-sizing: border-box !important;
+  }
+  
+  /* CRITICAL: Force grid to single column on mobile */
+  .admin-content > div > div[style*="display: grid"],
+  .admin-content div[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  
+  /* CRITICAL: Ensure chart containers are full width and block display */
+  .admin-content > div > div[style*="display: grid"] > div,
+  .admin-content div[style*="gridTemplateColumns"] > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+  }
+  
+  /* CRITICAL: Force chart resize by ensuring container dimensions are set */
+  .admin-content .recharts-responsive-container[style*="width"],
+  .admin-content .recharts-responsive-container[style*="height"] {
+    width: 100% !important;
+    height: 300px !important;
+    min-height: 300px !important;
+  }
+  
+  
+  /* Summary stats grid - single column on mobile */
+  .admin-content div[style*="display: grid"] > div > div[style*="display: grid"],
+  .admin-content div[style*="gridTemplateColumns"] > div > div[style*="display: grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Map Responsive */
+  .map-container {
+    margin: 0.75rem;
+    height: 320px;
+    border-radius: 12px;
+  }
+  
+  /* Dashboard content section responsive */
+  .dashboard-content-section {
+    padding: 0.75rem !important;
+  }
+  
+  /* Location prompt responsive */
+  .location-prompt {
+    padding: 0.75rem !important;
+  }
+  
+  .location-prompt-content {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+  
+  .location-button {
+    width: 100% !important;
+    padding: 0.5rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  /* Radius controls responsive */
+  .radius-controls {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+  
+  .radius-controls input[type="range"] {
+    width: 100% !important;
+  }
+  
+  .map-wrapper {
+    height: 280px !important;
+  }
+  
+  /* Employee Dashboard - Header fixes for mobile */
+  .min-h-screen.bg-gray-50 > div.bg-white.border-b {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  .min-h-screen.bg-gray-50 > div.bg-white.border-b > div > div.flex.items-center.justify-between {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  
+  .min-h-screen.bg-gray-50 > div.bg-white.border-b > div > div > div.flex.items-center.gap-3 {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 0.5rem;
+  }
+  
+  .min-h-screen.bg-gray-50 > div.bg-white.border-b > div > div > div > div.flex.items-center:first-child h1 {
+    font-size: 1.1rem;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  /* Employee Dashboard - Ensure profile and logout buttons are visible */
+  .min-h-screen.bg-gray-50 > div.bg-white.border-b button[title="Profile"],
+  .min-h-screen.bg-gray-50 > div.bg-white.border-b button[title="Logout"] {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: 1.25rem 0.75rem 2rem;
+  }
+  
+  .dashboard-greeting {
+    font-size: 1.3rem;
+  }
+  
+  .dashboard-actions {
+    padding: 0.5rem;
+  }
+  
+  .action-card {
+    padding: 1rem;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .action-icon {
+    margin: 0 auto;
+  }
+  
+  .form-container {
+    padding: 0.5rem;
+  }
+  
+  .form-card {
+    padding: 1rem 0.75rem 1.5rem;
+  }
+  
+  .form-title {
+    font-size: 1.2rem;
+  }
+  
+  .map-container {
+    margin: 0.5rem;
+    height: 280px;
+  }
+  
+  /* Bottom navigation small mobile fixes */
+  .bottom-nav {
+    padding: 0.6rem 0.25rem;
+    min-height: 65px;
+    z-index: 1000;
+  }
+  
+  .nav-item {
+    padding: 0.25rem 0.15rem;
+    font-size: 0.7rem;
+    gap: 0.2rem;
+    flex: 1;
+    max-width: 20%;
+  }
+  
+  .nav-item svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  
+  .nav-item span {
+    font-size: 0.65rem;
+    line-height: 1.2;
+  }
+  
+  /* Ensure content doesn't overlap navbar on small screens */
+  .dashboard-container {
+    padding-bottom: 80px !important;
+  }
+  
+  .dashboard-content-section {
+    padding-bottom: 1rem !important;
+  }
+  
+  .form-container {
+    padding-bottom: 80px !important;
+  }
+}
+
+/* Viewport height adjustments for mobile */
+@media (max-height: 700px) and (max-width: 768px) {
+  .dashboard-header {
+    padding: 1rem 0.75rem 1.5rem;
+  }
+  
+  .dashboard-actions {
+    margin-top: -1rem;
+    padding: 0.5rem;
+  }
+  
+  .action-card {
+    padding: 0.875rem;
+  }
+  
+  .map-container {
+    height: 250px;
+  }
+}
+
+
+/* Employee Dashboard Mobile Fixes - Using structure-based selectors */
+@media (max-width: 768px) {
+  /* Target Employee Dashboard header structure */
+  .min-h-screen.bg-gray-50 > .bg-white.border-b.border-gray-200.sticky {
+    padding: 0.75rem 1rem !important;
+  }
+  
+  .min-h-screen.bg-gray-50 > .bg-white.border-b.border-gray-200.sticky > div > div.flex.items-center.justify-between {
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+  
+  .min-h-screen.bg-gray-50 > .bg-white.border-b.border-gray-200.sticky > div > div > div.flex.items-center.gap-3 {
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    margin-top: 0.5rem !important;
+  }
+  
+  .min-h-screen.bg-gray-50 > .bg-white.border-b.border-gray-200.sticky > div > div > div > div.flex.items-center:first-child h1 {
+    font-size: 1rem !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+  
+  /* Ensure profile and logout buttons are visible and accessible */
+  .min-h-screen.bg-gray-50 button[title="Profile"],
+  .min-h-screen.bg-gray-50 button[title="Logout"] {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex-shrink: 0 !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+}
+
+/* ============================================
+   TABLET ANALYTICS CHARTS (769px - 1024px)
+   2-column grid layout
+   ============================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Analytics grid - 2 columns on tablet */
+  .admin-content > div > div[style*="display: grid"],
+  .admin-content > div > div[style*="gridTemplateColumns"],
+  .admin-content div[style*="display: grid"][style*="gridTemplateColumns"],
+  .admin-content div[style*="gridTemplateColumns"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.5rem !important;
+  }
+  
+  /* Chart containers - ensure proper sizing */
+  .admin-content > div > div[style*="display: grid"] > div,
+  .admin-content div[style*="gridTemplateColumns"] > div,
+  .admin-content div[style*="display: grid"] > div {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* ResponsiveContainer - tablet sizing */
+  .admin-content .recharts-responsive-container {
+    width: 100% !important;
+    height: 280px !important;
+    min-height: 280px !important;
+  }
+  
+  .admin-content .recharts-wrapper,
+  .admin-content .recharts-surface,
+  .admin-content svg.recharts-surface {
+    width: 100% !important;
+    height: 280px !important;
+  }
+}
+
+/* ============================================
+   TABLET ANALYTICS CHARTS (769px - 1024px)
+   2-column grid layout
+   ============================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Analytics grid - 2 columns on tablet */
+  .admin-content > div > div[style*="display: grid"],
+  .admin-content > div > div[style*="gridTemplateColumns"],
+  .admin-content div[style*="display: grid"][style*="gridTemplateColumns"],
+  .admin-content div[style*="gridTemplateColumns"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.5rem !important;
+  }
+  
+  /* Chart containers - ensure proper sizing */
+  .admin-content > div > div[style*="display: grid"] > div,
+  .admin-content div[style*="gridTemplateColumns"] > div,
+  .admin-content div[style*="display: grid"] > div {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* ResponsiveContainer - tablet sizing */
+  .admin-content .recharts-responsive-container {
+    width: 100% !important;
+    height: 280px !important;
+    min-height: 280px !important;
+  }
+  
+  .admin-content .recharts-wrapper,
+  .admin-content .recharts-surface,
+  .admin-content svg.recharts-surface {
+    width: 100% !important;
+    height: 280px !important;
+  }
+}
+
+/* Landscape mobile adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  .dashboard-header {
+    padding: 1rem 0.75rem 1.5rem;
+  }
+  
+  .dashboard-actions {
+    margin-top: -1rem;
+  }
+  
+  .map-container {
+    height: 300px;
+  }
+}
+
+/* Nearby Issues Map Container */
+.nearby-issues-map-container {
+  width: 100%;
+  height: calc(100vh - 220px);
+  min-height: 500px;
+}
+
+.nearby-issues-map-container .map-container {
+  height: 100% !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Nearby Issues Responsive */
+@media (max-width: 768px) {
+  .nearby-issues-map-container {
+    height: calc(100vh - 280px) !important;
+    min-height: 400px !important;
+  }
+  .nearby-issues-container {
+    padding: 0 !important;
+  }
+  
+  .nearby-issues-header {
+    padding: 0.75rem 1rem !important;
+  }
+  
+  .nearby-issues-header h1 {
+    font-size: 1.1rem !important;
+  }
+  
+  .nearby-issues-header > div[style*="display: flex"][style*="justify-content: space-between"] {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .nearby-issues-header > div[style*="display: flex"][style*="justify-content: space-between"] > div[style*="display: flex"][style*="gap: 0.75rem"] {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .nearby-issues-header > div[style*="display: flex"][style*="gap: 0.5rem"][style*="flexWrap"] {
+    gap: 0.375rem !important;
+  }
+  
+  .nearby-issues-header > div[style*="display: flex"][style*="gap: 0.5rem"][style*="flexWrap"] button {
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .nearby-issues-header > div[style*="display: flex"][style*="alignItems: center"][style*="gap: 0.75rem"][style*="marginBottom"] {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+  
+  .nearby-issues-list {
+    padding: 0.75rem 1rem !important;
+  }
+  
+  .nearby-issue-card {
+    padding: 1rem !important;
+  }
+  
+  .nearby-issue-card h3 {
+    font-size: 1rem !important;
+  }
+  
+  .nearby-issue-card > div[style*="display: flex"][style*="gap: 0.5rem"][style*="justifyContent: flex-end"] {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  .nearby-issue-card > div[style*="display: flex"][style*="gap: 0.5rem"][style*="justifyContent: flex-end"] button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .nearby-issues-map-container {
+    height: calc(100vh - 300px) !important;
+    min-height: 350px !important;
+  }
+  
+  .nearby-issues-header {
+    padding: 0.625rem 0.75rem !important;
+  }
+  
+  .nearby-issues-header h1 {
+    font-size: 1rem !important;
+  }
+  
+  .nearby-issues-header > div[style*="display: flex"][style*="justify-content: space-between"] > div[style*="display: flex"][style*="align-items: center"][style*="gap: 0.75rem"] {
+    gap: 0.375rem !important;
+  }
+  
+  .nearby-issues-header > div[style*="display: flex"][style*="justify-content: space-between"] > div[style*="display: flex"][style*="align-items: center"][style*="gap: 0.75rem"] > div[style*="display: flex"][style*="background: #f1f5f9"] {
+    padding: 0.125rem !important;
+  }
+  
+  .nearby-issues-header > div[style*="display: flex"][style*="justify-content: space-between"] > div[style*="display: flex"][style*="align-items: center"][style*="gap: 0.75rem"] > div[style*="display: flex"][style*="background: #f1f5f9"] button {
+    padding: 0.375rem 0.5rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .nearby-issues-header > div[style*="display: flex"][style*="justify-content: space-between"] > div[style*="display: flex"][style*="align-items: center"][style*="gap: 0.75rem"] span {
+    font-size: 0.75rem !important;
+  }
+  
+  .nearby-issues-list {
+    padding: 0.5rem 0.75rem !important;
+  }
+  
+  .nearby-issue-card {
+    padding: 0.875rem !important;
+  }
+  
+  .nearby-issue-card > div[style*="height: 200px"] {
+    height: 160px !important;
+  }
+}
+
+/* Loading and Animation Styles */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #1e4359;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 0.75rem; }
+.mt-4 { margin-top: 1rem; }
