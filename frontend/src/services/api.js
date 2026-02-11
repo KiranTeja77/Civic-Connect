@@ -209,6 +209,15 @@ class ApiService {
     return this.handleResponse(response);
   }
 
+  async sendOtpByMobile(mobile) {
+    const response = await fetch(`${this.baseURL}/auth/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mobile })
+    });
+    return this.handleResponse(response);
+  }
+
   async verifyOtpByAadhaar(aadhaarNumber, otp) {
     const response = await fetch(`${this.baseURL}/auth/verify-otp`, {
       method: 'POST',

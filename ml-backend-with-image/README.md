@@ -12,8 +12,8 @@ Overview:
 
 Run:
 
-1. python -m venv .venv ; mac : python3 -m venv .venv
-2. source .venv/bin/activate # Windows: .venv\Scripts\Activate
+1. python3 -m venv .venv 
+2. source .venv/bin/activate # Windows: c
 3. pip install -r requirements.txt
 4. uvicorn app.main:app --reload --port 8000
 

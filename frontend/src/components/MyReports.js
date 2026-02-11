@@ -149,7 +149,7 @@ const MyReports = ({ user }) => {
                     <div 
                       className="issue-image"
                       style={{ 
-                        background: '#f8fafc', 
+                        background: 'white', 
                         borderRadius: '8px', 
                         overflow: 'hidden',
                         height: '180px',
@@ -161,7 +161,7 @@ const MyReports = ({ user }) => {
                       <img 
                         src={imageUrl}
                         alt={issue.title || 'Issue image'}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        style={{ width: '50%', height: '50', objectFit: 'cover', display: 'block' }}
                         onClick={(e) => { e.stopPropagation(); setPreviewUrl(imageUrl); }}
                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                       />

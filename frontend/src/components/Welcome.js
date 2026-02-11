@@ -10,8 +10,6 @@ const Welcome = () => {
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
     { code: 'hi', name: 'हिंदी', flag: '🇮🇳' },
-    { code: 'sat', name: 'ᱥᱟᱱᱛᱟᱲᱤ', flag: '🏛️' },
-    { code: 'nag', name: 'नागपुरी', flag: '🏞️' }
   ];
 
   const handleGetStarted = () => {

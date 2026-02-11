@@ -356,6 +356,9 @@ class IssueController {
       let category = req.body.category || 'Other'; // Use provided category or default
       let priority = req.body.priority || 'medium'; // Use provided priority or default
       let mlResult = null;
+      
+      // Generate reportId for tracking (used for dataset removal when resolved)
+      const reportId = uuidv4();
 
       // ML validation is now optional - if it fails, we proceed with provided/default category
       if (process.env.ML_API_URL) {
@@ -369,9 +372,8 @@ class IssueController {
           if (req.body.images && Array.isArray(req.body.images) && req.body.images.length > 0) {
             imageUrl = req.body.images[0].url || null;
           }
-
           const mlPayload = {
-            report_id: uuidv4(),
+            report_id: reportId,
             description,
             user_id: req.user._id.toString(),
             image_url: imageUrl,
@@ -432,8 +434,8 @@ class IssueController {
               }
 
               // Use ML-detected priority if available
-              if (mlResult && mlResult.priority) {
-                priority = mlResult.priority === 'urgent' ? 'urgent' : 'medium';
+              if (mlResult && mlResult.urgency) {
+                priority = mlResult.urgency;
               }
             } else {
               // ML service returned error - log but continue with default category
@@ -501,7 +503,8 @@ class IssueController {
         reportedBy: req.user._id,
         images,
         documents: req.files?.documents || [],
-        status: 'reported' // Explicitly set status to 'reported' - must stay 'reported' until employee accepts
+        status: 'reported', // Explicitly set status to 'reported' - must stay 'reported' until employee accepts
+        reportId: reportId || null // Store report_id for ML dataset removal
       });
 
       await issue.save();
@@ -542,13 +545,17 @@ class IssueController {
           
           await issue.save();
 
-          // Notify all employees in the department
-          const notificationPromises = departmentEmployees.map(emp => 
+          // Notify ONLY field-staff employees (not supervisors or commissioners yet)
+          // Supervisors and commissioners will be notified when issue escalates
+          const fieldStaffOnly = departmentEmployees.filter(emp => 
+            emp.role === 'field-staff' || emp.role === 'employee'
+          );
+          const notificationPromises = fieldStaffOnly.map(emp => 
             notificationService.notifyIssueAssignment(issue, emp, req.user)
           );
           await Promise.all(notificationPromises);
           
-          console.log(`✅ Issue auto-assigned to department "${issueCategory}". ${departmentEmployees.length} employees notified.`);
+          console.log(`✅ Issue auto-assigned to field-staff in department "${issueCategory}". ${fieldStaffOnly.length} field-staff notified.`);
         } else {
           // No employees found for this department - issue remains unassigned
           // Admins can manually assign it later

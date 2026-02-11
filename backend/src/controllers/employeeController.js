@@ -15,68 +15,80 @@ class EmployeeController {
       const filter = {};
 
       if (employeeRoles.includes(user.role)) {
-        // Field Staff: See complaints in their department (either assigned to them OR assigned to department)
+        // Get user's departments
+        const userDepartments = user.departments && user.departments.length > 0 
+          ? user.departments 
+          : (user.department ? [user.department] : []);
+        
+        const hasAllDepartments = userDepartments.includes('All');
+        
+        // Field Staff: ONLY see issues where assignedRole is 'field-staff'
         if (user.role === 'field-staff' || user.role === 'employee') {
-          // Get user's departments
-          const userDepartments = user.departments && user.departments.length > 0 
-            ? user.departments 
-            : (user.department ? [user.department] : []);
-          
-          // Show issues that are either:
+          // Show issues that are:
           // 1. Assigned specifically to this user, OR
-          // 2. Assigned to the department (assignedRole set but assignedTo is null/empty) and match user's department
+          // 2. Assigned to field-staff role (assignedRole = 'field-staff') and match user's department
+          const baseCondition = {
+            assignedRole: 'field-staff',
+            $or: [
+              { assignedTo: null },
+              { assignedTo: { $exists: false } }
+            ]
+          };
+          
+          // Add department filter only if user doesn't have 'All'
+          if (!hasAllDepartments && userDepartments.length > 0) {
+            baseCondition.category = { $in: userDepartments };
+          }
+          
           filter.$or = [
             { assignedTo: user._id }, // Specifically assigned to this user
-            {
-              // Assigned to department (assignedRole exists but assignedTo is null or not set)
-              assignedRole: { $exists: true },
-              $or: [
-                { assignedTo: null },
-                { assignedTo: { $exists: false } }
-              ],
-              // Must match user's department
-              category: userDepartments.includes('All') 
-                ? { $exists: true } // If user has 'All', show all department-assigned issues
-                : { $in: userDepartments }
-            }
+            baseCondition
           ];
         }
-        // Supervisor: See complaints assigned to them + escalated from field-staff
+        // Supervisor: ONLY see issues where assignedRole is 'supervisor' (escalated to supervisor level)
         else if (user.role === 'supervisor') {
-          filter.$or = [
-            { assignedTo: user._id },
-            { 
-              assignedRole: 'field-staff',
-              status: { $in: ['escalated', 'in-progress'] },
-              category: { 
-                $in: user.departments && user.departments.length > 0 
-                  ? (user.departments.includes('All') ? [] : user.departments)
-                  : (user.department && user.department !== 'All' ? [user.department] : [])
-              }
-            }
-          ];
+          // Show issues that are:
+          // 1. Assigned specifically to this user, OR
+          // 2. Assigned to supervisor role (assignedRole = 'supervisor') and match user's department
+          const baseCondition = {
+            assignedRole: 'supervisor',
+            $or: [
+              { assignedTo: null },
+              { assignedTo: { $exists: false } }
+            ]
+          };
           
-          // Filter by department if not 'All'
-          const userDepartments = user.departments && user.departments.length > 0 
-            ? user.departments 
-            : (user.department ? [user.department] : []);
-          
-          if (!userDepartments.includes('All') && userDepartments.length > 0) {
-            if (filter.$or) {
-              filter.$or = filter.$or.map(condition => {
-                if (condition.category) {
-                  condition.category = { $in: userDepartments };
-                }
-                return condition;
-              });
-            } else {
-              filter.category = { $in: userDepartments };
-            }
+          // SUPERVISORS: Only see issues from their own department
+          if (userDepartments.length > 0) {
+            baseCondition.category = { $in: userDepartments };
           }
+          
+          filter.$or = [
+            { assignedTo: user._id }, // Specifically assigned to this user
+            baseCondition
+          ];
         }
-        // Commissioner: See ALL complaints from ALL departments
+        // Commissioner: See only issues assigned to commissioner level
         else if (user.role === 'commissioner') {
-          // No additional filtering - can see everything
+          // COMMISSIONERS: ONLY see issues that are assigned to commissioner level
+          const baseCondition = {
+            assignedRole: 'commissioner',
+            $or: [
+              { assignedTo: null },
+              { assignedTo: { $exists: false } }
+            ]
+          };
+          
+          // Commissioners with 'All' departments see ALL commissioner-level issues
+          // Commissioners with specific departments only see issues from their departments
+          if (!hasAllDepartments && userDepartments.length > 0) {
+            baseCondition.category = { $in: userDepartments };
+          }
+          
+          filter.$or = [
+            { assignedTo: user._id }, // Specifically assigned to this user
+            baseCondition
+          ];
         }
       } else {
         // Fallback for other roles
@@ -291,7 +303,7 @@ class EmployeeController {
       const { id } = req.params;
       const { latitude, longitude } = req.body;
 
-      const issue = await Issue.findById(id);
+      const issue = await Issue.findById(id).populate('reportedBy', '_id');
       if (!issue) {
         return res.status(404).json({ success: false, message: 'Issue not found' });
       }
@@ -332,12 +344,13 @@ class EmployeeController {
         };
       }
 
-      // Validate GPS coordinates are within 10 meters of original issue location
+      // Validate GPS coordinates are within a reasonable proximity of original issue location
       if (latitude && longitude) {
         const originalLat = issue.location?.coordinates?.latitude;
         const originalLng = issue.location?.coordinates?.longitude;
         
         if (originalLat && originalLng) {
+          const allowedDistanceMeters = 100; // Looser threshold to account for mobile GPS jitter
           // Calculate distance using Haversine formula (approximate)
           const R = 6371000; // Earth's radius in meters
           const dLat = (parseFloat(latitude) - originalLat) * Math.PI / 180;
@@ -348,10 +361,10 @@ class EmployeeController {
           const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
           const distance = R * c; // Distance in meters
           
-          if (distance > 10) {
+          if (distance > allowedDistanceMeters) {
             return res.status(400).json({ 
               success: false, 
-              message: `Resolved location must be within 10 meters of reported location. Current distance: ${Math.round(distance)}m` 
+              message: `Resolved location must be within ${allowedDistanceMeters} meters of reported location. Current distance: ${Math.round(distance)}m` 
             });
           }
         }
@@ -408,6 +421,74 @@ class EmployeeController {
       }
 
       await issue.save();
+
+      // Remove issue from ML dataset when resolved
+      console.log(`[RESOLVE] Attempting to remove issue ${issue._id} from ML dataset. reportId: ${issue.reportId}, ML_API_URL: ${process.env.ML_API_URL ? 'configured' : 'not configured'}`);
+      
+      if (process.env.ML_API_URL) {
+        try {
+          // Construct remove URL - handle different ML_API_URL formats
+          let baseUrl = process.env.ML_API_URL;
+          // Remove /submit if present
+          baseUrl = baseUrl.replace(/\/submit\/?$/, '');
+          // Remove trailing slash
+          baseUrl = baseUrl.replace(/\/$/, '');
+          const removeUrl = `${baseUrl}/remove`;
+          
+          console.log(`[RESOLVE] Calling ML remove endpoint: ${removeUrl} with report_id: ${issue.reportId || 'NOT SET'}`);
+          
+          // If reportId is not set, try to find it by description and user_id
+          let reportIdToRemove = issue.reportId;
+          const params = new URLSearchParams();
+          
+          if (reportIdToRemove) {
+            // Primary method: use reportId
+            params.append('report_id', reportIdToRemove);
+            console.log(`[RESOLVE] Using reportId to remove: ${reportIdToRemove}`);
+          } else {
+            // Fallback: use description and user_id
+            console.log(`[RESOLVE] Issue ${issue._id} does not have reportId. Using fallback: description/user_id...`);
+            if (issue.description && issue.reportedBy) {
+              // Handle both populated object and ObjectId
+              const userId = issue.reportedBy._id ? issue.reportedBy._id.toString() : issue.reportedBy.toString();
+              params.append('description', issue.description);
+              params.append('user_id', userId);
+              console.log(`[RESOLVE] Fallback params: description="${issue.description.substring(0, 50)}...", user_id="${userId}"`);
+            } else {
+              console.warn(`[RESOLVE] Cannot remove issue ${issue._id} from ML dataset: missing reportId, description, or reportedBy`);
+            }
+          }
+          
+          if (params.toString()) {
+            const removeResponse = await fetch(removeUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: params
+            });
+            
+            const responseText = await removeResponse.text();
+            console.log(`[RESOLVE] ML remove response status: ${removeResponse.status}, body: ${responseText}`);
+            
+            if (removeResponse.ok) {
+              try {
+                const removeResult = JSON.parse(responseText);
+                console.log(`[RESOLVE] ✅ Successfully removed issue ${issue._id} from ML dataset:`, removeResult);
+              } catch (parseError) {
+                console.log(`[RESOLVE] ✅ Removed issue ${issue._id} from ML dataset (non-JSON response): ${responseText}`);
+              }
+            } else {
+              console.error(`[RESOLVE] ❌ Failed to remove issue from ML dataset. Status: ${removeResponse.status}, Response: ${responseText}`);
+            }
+          }
+        } catch (removeError) {
+          // Non-blocking: log error but don't fail resolution
+          console.error(`[RESOLVE] ❌ Error removing issue from ML dataset (non-blocking):`, removeError);
+          console.error(`[RESOLVE] Error details:`, removeError.message);
+          console.error(`[RESOLVE] Stack trace:`, removeError.stack);
+        }
+      } else {
+        console.warn(`[RESOLVE] ML_API_URL not configured. Cannot remove issue from ML dataset.`);
+      }
 
       await notificationService.notifyIssueResolved(issue, req.user);
 

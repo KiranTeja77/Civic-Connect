@@ -431,7 +431,7 @@ const NearbyIssues = ({ user }) => {
                   </p>
 
                   {imageUrl && (
-                    <div className="mb-3 rounded-lg overflow-hidden h-48 w-full bg-gray-100">
+                    <div className="mb-3 rounded-lg overflow-hidden h-60 w-80 bg-gray-100">
                       <img
                         src={imageUrl}
                         alt={issue.title || 'Issue image'}

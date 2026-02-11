@@ -237,3 +237,59 @@ async def submit_report(
             "confidence": 0.0,
             "reason": f"ML processing error: {str(e)}"
         }
+
+@app.post("/remove")
+async def remove_report_endpoint(
+    report_id: Optional[str] = Form(None, description="Report ID to remove from dataset"),
+    description: Optional[str] = Form(None, description="Description to match (fallback)"),
+    user_id: Optional[str] = Form(None, description="User ID to match (fallback)")
+):
+    """
+    Remove a report from dataset.jsonl by report_id, or by description/user_id as fallback.
+    Called when an issue is resolved by an employee.
+    """
+    try:
+        from app import dataset
+        
+        report_id_clean = report_id.strip() if report_id else None
+        description_clean = description.strip() if description else None
+        user_id_clean = user_id.strip() if user_id else None
+        
+        # Must have either report_id OR (description AND user_id)
+        if not report_id_clean and not (description_clean and user_id_clean):
+            raise HTTPException(
+                status_code=422,
+                detail="Validation error: Must provide either 'report_id' OR both 'description' and 'user_id'"
+            )
+        
+        print(f"[REMOVE] Attempting to remove report. report_id={report_id_clean}, description={description_clean[:50] if description_clean else None}..., user_id={user_id_clean}")
+        
+        # Remove the report from dataset
+        removed = dataset.remove_report(
+            report_id=report_id_clean,
+            description=description_clean,
+            user_id=user_id_clean
+        )
+        
+        if removed:
+            return {
+                "success": True,
+                "message": f"Report removed from dataset",
+                "report_id": report_id_clean or "matched_by_description"
+            }
+        else:
+            return {
+                "success": False,
+                "message": f"Report not found in dataset",
+                "report_id": report_id_clean or "unknown"
+            }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"ERROR in remove_report_endpoint: {str(e)}")
+        print(traceback.format_exc())
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to remove report from dataset: {str(e)}"
+        )

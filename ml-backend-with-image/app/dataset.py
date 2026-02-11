@@ -70,3 +70,91 @@ def save_report(report_dict: dict):
         import traceback
         print(traceback.format_exc())
         raise
+
+
+def remove_report(report_id: str = None, description: str = None, user_id: str = None):
+    """
+    Remove a report from dataset.jsonl by report_id, or by description/user_id as fallback.
+    Returns True if removed, False if not found.
+    """
+    try:
+        if not DATA_FILE.exists():
+            print(f"[WARNING] Dataset file does not exist: {DATA_FILE.absolute()}")
+            return False
+        
+        # Read all lines
+        lines = []
+        removed = False
+        removed_report = None
+        
+        with DATA_FILE.open("r", encoding="utf8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    report = json.loads(line)
+                    should_remove = False
+                    
+                    # Method 1: Match by report_id (primary method)
+                    if report_id and report.get("report_id") == report_id:
+                        should_remove = True
+                        print(f"[DEBUG] Removing report from dataset by report_id: {report_id}")
+                    
+                    # Method 2: Fallback - match by description and user_id
+                    elif description and user_id:
+                        report_desc = (report.get("description") or "").strip().lower()
+                        report_user_id = (report.get("user_id") or "").strip()
+                        search_desc = description.strip().lower()
+                        search_user_id = user_id.strip()
+                        
+                        # Normalize descriptions for comparison (remove extra whitespace)
+                        report_desc_normalized = " ".join(report_desc.split())
+                        search_desc_normalized = " ".join(search_desc.split())
+                        
+                        if (report_desc_normalized == search_desc_normalized and 
+                            report_user_id == search_user_id):
+                            should_remove = True
+                            print(f"[DEBUG] Removing report from dataset by description/user_id match")
+                            print(f"[DEBUG] Matched description: {report_desc_normalized[:50]}...")
+                            print(f"[DEBUG] Matched user_id: {report_user_id}")
+                    
+                    if should_remove:
+                        removed = True
+                        removed_report = report
+                        continue  # Skip this line (don't add to lines)
+                    
+                    lines.append(line)
+                except json.JSONDecodeError:
+                    # Keep invalid JSON lines (don't lose data)
+                    lines.append(line)
+                    continue
+        
+        # Write back all lines except the removed one
+        if removed:
+            with DATA_FILE.open("w", encoding="utf8") as f:
+                for line in lines:
+                    f.write(line + "\n")
+                f.flush()
+                os.fsync(f.fileno())
+            
+            removed_id = removed_report.get("report_id") if removed_report else "unknown"
+            print(f"[DEBUG] ✅ Successfully removed report from dataset: report_id={removed_id}")
+            return True
+        else:
+            if report_id:
+                print(f"[WARNING] Report not found in dataset: report_id={report_id}")
+            elif description and user_id:
+                print(f"[WARNING] Report not found in dataset by description/user_id")
+            return False
+        
+    except PermissionError as e:
+        print(f"[ERROR] Permission denied modifying dataset file: {str(e)}")
+        print(f"[ERROR] File path: {DATA_FILE.absolute()}")
+        raise
+    except Exception as e:
+        print(f"[ERROR] Failed to remove report from dataset: {str(e)}")
+        print(f"[ERROR] Report ID: {report_id}")
+        import traceback
+        print(traceback.format_exc())
+        raise
